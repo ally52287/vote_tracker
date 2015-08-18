@@ -1,78 +1,94 @@
 'use strict'
 
-var photoArray = []; //array of photo objects that carry the path and the vote
-//tally, and perhaps the name too.
+// var photoArray = []; //array of photo objects that carry the path and the vote
+// //tally, and perhaps the name too.
 
 //[{}, {}, {}...]
 
 var Photo = function(fileLocation) { //constructor
   this.path = fileLocation;
   this.vote = 1;
-  this.index = //where it lives in photoArray
-
-}
-
+};
 
 var Tracker = function() {
-  this.leftPhoto
-  this.rightPhoto
-
-}
+  this.photoArray = [];
+  this.leftPhoto = '';
+  this.rightPhoto = '';
+};
 
 Photo.prototype.highlight = function() {
 //highlight photo after clicked
 };
 
-Tracker.prototype.waitingForVote = function() {
-//recieve click and increment the vote count
-
-//event listener on each photo
-
-//drawTheChart()?
-
-//giveUserOptionToVoteAgain()?
-
-//event listener will call dispalyWinner()
-
-//call displayPhoto()
-
-//recieveVote()
-};
-
 Tracker.prototype.getRandomInt = function() {
-//generate random number to select image from photoArray
+  return (Math.floor(Math.random()*(14-1+1))+1)-1;
 };
+
+
+Tracker.prototype.setphoto = function(){
+  this.leftPhoto = this.photoArray[this.getRandomInt()];
+  this.rightPhoto = this.photoArray[this.getRandomInt()];
+    while (this.leftPhoto.path == this.rightPhoto.path) {
+    this.rightPhoto = this.photoArray[this.getRandomInt()];
+  }
+};
+
 
 Tracker.prototype.displayPhotos = function() {
-//display random photos
+  var theLeftPhoto = document.getElementById("photo1");
+  theLeftPhoto.attributes[0].value = this.leftPhoto.path;
 
-//prevent picking same photo twice
-// if(photo1 === photo2) then re-roll
+  var theRightPhoto = document.getElementById("photo2");
+  theRightPhoto.attributes[0].value = this.rightPhoto.path;
+};
 
+
+
+Tracker.prototype.waitingForVote = function() {
+  this.setphoto();
+  this.displayPhotos();
+
+  //recieve click and increment the vote count
+  var theLeftPhoto = document.getElementById("photo1");
+  theLeftPhoto.addEventListener('click', function(){
+    tracker1.leftPhoto.vote = tracker1.leftPhoto.vote + 1;
+  });
+
+  var theRightPhoto = document.getElementById("photo2");
+  theRightPhoto.addEventListener('click', function(){
+    tracker1.rightPhoto.vote = tracker1.rightPhoto.vote + 1;
+  });
+  //event listener on each photo
+  //drawTheChart()?
+  //giveUserOptionToVoteAgain()?
+  //event listener will call dispalyWinner()
+  //call displayPhoto()
+  //recieveVote()
 };
 
 Tracker.prototype.displayWinner = function() {
-
 //event listner will call waitingForVote()
-
 //call highlight()
 };
 
-//DOM 'document.getElementById'
 
-var photo1 = new Photo('img/kittens/photo1.jpg');//example
-var photo2 = new Photo('img/kittens/photo2.jpg');
-var photo3 = new Photo('img/kittens/photo3.jpg');
-var photo4 = new Photo('img/kittens/photo4.jpg');
-var photo5 = new Photo('img/kittens/photo5.jpg');
-var photo6 = new Photo('img/kittens/photo6.jpg');
-var photo7 = new Photo('img/kittens/photo7.jpg');
-var photo8 = new Photo('img/kittens/photo8.jpg');
-var photo9 = new Photo('img/kittens/photo9.jpg');
-var photo10 = new Photo('img/kittens/photo10.jpg');
-var photo11 = new Photo('img/kittens/photo11.jpg');
-var photo12 = new Photo('img/kittens/photo12.jpg');
-var photo13 = new Photo('img/kittens/photo13.jpg');
-var photo14 = new Photo('img/kittens/photo14.jpg');//example
+//Set the process in motion by instantiating a tracker and calling State 1 method
+var tracker1 = new Tracker();
 
-var Tracker = function() {
+tracker1.photoArray.push(new Photo('img/kittens/photo1.jpg'));
+console.log(tracker1.photoArray[0].path);
+tracker1.photoArray.push(new Photo('img/kittens/photo2.jpg'));
+tracker1.photoArray.push(new Photo('img/kittens/photo3.jpg'));
+tracker1.photoArray.push(new Photo('img/kittens/photo4.jpg'));
+tracker1.photoArray.push(new Photo('img/kittens/photo5.jpg'));
+tracker1.photoArray.push(new Photo('img/kittens/photo6.jpg'));
+tracker1.photoArray.push(new Photo('img/kittens/photo7.jpg'));
+tracker1.photoArray.push(new Photo('img/kittens/photo8.jpg'));
+tracker1.photoArray.push(new Photo('img/kittens/photo9.jpg'));
+tracker1.photoArray.push(new Photo('img/kittens/photo10.jpg'));
+tracker1.photoArray.push(new Photo('img/kittens/photo11.jpg'));
+tracker1.photoArray.push(new Photo('img/kittens/photo12.jpg'));
+tracker1.photoArray.push(new Photo('img/kittens/photo13.jpg'));
+tracker1.photoArray.push(new Photo('img/kittens/photo14.jpg'));
+
+tracker1.waitingForVote();
