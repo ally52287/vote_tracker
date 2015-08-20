@@ -1,94 +1,140 @@
+
+
+//95d0d2ce1cf911a
+
+
 'use strict'
 
-// var photoArray = []; //array of photo objects that carry the path and the vote
-// //tally, and perhaps the name too.
-
-//[{}, {}, {}...]
-
-var Photo = function(fileLocation) { //constructor
-  this.path = fileLocation;
-  this.vote = 1;
-};
-
-var Tracker = function() {
-  this.photoArray = [];
-  this.leftPhoto = '';
-  this.rightPhoto = '';
-};
-
-Photo.prototype.highlight = function() {
-//highlight photo after clicked
-};
-
-Tracker.prototype.getRandomInt = function() {
-  return (Math.floor(Math.random()*(14-1+1))+1)-1;
-};
+$(document).ready(function(){
 
 
-Tracker.prototype.setphoto = function(){
-  this.leftPhoto = this.photoArray[this.getRandomInt()];
-  this.rightPhoto = this.photoArray[this.getRandomInt()];
-    while (this.leftPhoto.path == this.rightPhoto.path) {
-    this.rightPhoto = this.photoArray[this.getRandomInt()];
-  }
-};
+    $.ajax({
+      url: 'https://api.imgur.com/3/album/DDoWy',
+      method: 'GET',
+      headers: {
+        'Authorization': 'Client-ID 95d0d2ce1cf911a'
+
+      }
+    })
+    .done(function(get){
+      var photos = get.data.images;
 
 
-Tracker.prototype.displayPhotos = function() {
-  var theLeftPhoto = document.getElementById("photo1");
-  theLeftPhoto.attributes[0].value = this.leftPhoto.path;
+        var Photo = function(fileLocation) {
+          this.path = fileLocation;
+          this.vote = 1;
+        };
 
-  var theRightPhoto = document.getElementById("photo2");
-  theRightPhoto.attributes[0].value = this.rightPhoto.path;
-};
+        var Tracker = function(none) {
+          this.photoArray = [];
+          this.leftPhoto = none;
+          this.rightPhoto = none;
+        };
 
-
-
-Tracker.prototype.waitingForVote = function() {
-  this.setphoto();
-  this.displayPhotos();
-
-  //recieve click and increment the vote count
-  var theLeftPhoto = document.getElementById("photo1");
-  theLeftPhoto.addEventListener('click', function(){
-    tracker1.leftPhoto.vote = tracker1.leftPhoto.vote + 1;
-  });
-
-  var theRightPhoto = document.getElementById("photo2");
-  theRightPhoto.addEventListener('click', function(){
-    tracker1.rightPhoto.vote = tracker1.rightPhoto.vote + 1;
-  });
-  //event listener on each photo
-  //drawTheChart()?
-  //giveUserOptionToVoteAgain()?
-  //event listener will call dispalyWinner()
-  //call displayPhoto()
-  //recieveVote()
-};
-
-Tracker.prototype.displayWinner = function() {
-//event listner will call waitingForVote()
-//call highlight()
-};
+        var tracker1 = new Tracker('none');
 
 
-//Set the process in motion by instantiating a tracker and calling State 1 method
-var tracker1 = new Tracker();
+        for(var i=0; i<photos.length; i++){
+          tracker1.photoArray.push(new Photo(photos[i].link))
+          tracker1.photoArray[i].path = photos[i].link;
+        }
+        Tracker.prototype.getRandomInt = function() {
+          return (Math.floor(Math.random()*(14-1+1))+1)-1;
+        };
 
-tracker1.photoArray.push(new Photo('img/kittens/photo1.jpg'));
-console.log(tracker1.photoArray[0].path);
-tracker1.photoArray.push(new Photo('img/kittens/photo2.jpg'));
-tracker1.photoArray.push(new Photo('img/kittens/photo3.jpg'));
-tracker1.photoArray.push(new Photo('img/kittens/photo4.jpg'));
-tracker1.photoArray.push(new Photo('img/kittens/photo5.jpg'));
-tracker1.photoArray.push(new Photo('img/kittens/photo6.jpg'));
-tracker1.photoArray.push(new Photo('img/kittens/photo7.jpg'));
-tracker1.photoArray.push(new Photo('img/kittens/photo8.jpg'));
-tracker1.photoArray.push(new Photo('img/kittens/photo9.jpg'));
-tracker1.photoArray.push(new Photo('img/kittens/photo10.jpg'));
-tracker1.photoArray.push(new Photo('img/kittens/photo11.jpg'));
-tracker1.photoArray.push(new Photo('img/kittens/photo12.jpg'));
-tracker1.photoArray.push(new Photo('img/kittens/photo13.jpg'));
-tracker1.photoArray.push(new Photo('img/kittens/photo14.jpg'));
+        Tracker.prototype.setPhoto = function(){
+          tracker1.leftPhoto = tracker1.photoArray[tracker1.getRandomInt()];
+          tracker1.rightPhoto = tracker1.photoArray[tracker1.getRandomInt()];
+            while (tracker1.leftPhoto.path == tracker1.rightPhoto.path) {
+              tracker1.rightPhoto = tracker1.photoArray[tracker1.getRandomInt()];
+            }
+        };
 
-tracker1.waitingForVote();
+        Tracker.prototype.displayPhotos = function() {
+          $('#photo1').attr("src",tracker1.leftPhoto.path);
+          $('#photo2').attr("src",tracker1.rightPhoto.path);
+
+        };
+
+        Tracker.prototype.incVote = function(cutest){
+          cutest.vote = cutest.vote + 1;
+        };
+
+        Tracker.prototype.returnWinner = function(){
+            if (tracker1.leftPhoto.vote > tracker1.rightPhoto.vote) {
+              return $('#photo1');
+
+            } else if (tracker1.leftPhoto.vote < tracker1.rightPhoto.vote){
+                return $('#photo2');
+              }
+        };
+
+        Tracker.prototype.listenForVote = function(){
+          $('#photo1').on('click', function(){
+            tracker1.incVote(tracker1.leftPhoto);
+            var winnerLoc = tracker1.returnWinner();
+            tracker1.displayWinner(winnerLoc);
+            }
+          );
+
+          $('#photo2').on('click', function(){
+            tracker1.incVote(tracker1.rightPhoto);
+            var winnerLoc = tracker1.returnWinner();
+            tracker1.displayWinner(winnerLoc);
+          });
+        }
+
+
+
+        Tracker.prototype.encourageNext = function (){
+          $('#vote').attr("class", "vote");
+          $('#vote').on('click', function(){
+            $('#vote').attr("class", "imgChart noButton");
+            $('#KittyChart').attr("class", "imgChart noButton");
+            tracker1.waitingForVote();
+          });
+        };
+
+        Tracker.prototype.waitingForVote = function() {
+          tracker1.setPhoto();
+          tracker1.displayPhotos();
+          tracker1.listenForVote();
+        };
+
+        Tracker.prototype.displayWinner = function(winner) {
+          tracker1.encourageNext();
+        };
+
+      tracker1.waitingForVote();
+      tracker1.setPhoto();
+    })
+
+function makeChart(l,r) {
+
+    var data = [
+      {
+          value: r,
+          color:"#F7464A",
+          highlight: "#FF5A5E",
+          label: "Right"
+      },
+      {
+          value: l,
+          color: "#46BFBD",
+          highlight: "#5AD3D1",
+          label: "Left"
+      }
+    ];
+
+    var newChart = document.getElementById("kittyChart").getContext('2d');
+    var donutChart = new Chart(newChart).Doughnut(data);
+}
+
+makeChart(1,1);
+
+
+
+
+    });
+
+
